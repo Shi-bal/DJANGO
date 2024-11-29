@@ -1,5 +1,25 @@
 from django.db import models
 from twilio.rest import Client
+from decouple import config
+
+# Load credentials from .env
+account_sid = config('TWILIO_ACCOUNT_SID')
+auth_token = config('TWILIO_AUTH_TOKEN')
+print(f"Account SID length: {len(account_sid)}")  # Should be 34 characters
+print(f"Auth token length: {len(auth_token)}")    # Should be 32 characters
+
+# Initialize Twilio client
+client = Client(account_sid, auth_token)
+
+# Example: Sending a message
+message = client.messages.create(
+    body="Hello from Django!",
+    from_='+17753209120',  # Replace with your Twilio number
+    to='+639489625940'      # Replace with the recipient's number
+)
+
+print(f"Message sent! SID: {message.sid}")
+
 import os  # For accessing environment variables
 
 # Create your models here.
@@ -12,27 +32,23 @@ class Message(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):  
-        account_sid = "ACd50c52da4b7f4746435ab14f098012d1"
-        auth_token = "1bfdd882d093f937fd6adc995b31f6ff"
+        account_sid = "ACa038f99ab18470ef3b8f44012ec6cfe1"
+        auth_token = "8efdbbb6f6666cfd30fa9071a6ba35fc"
 
         client = Client(account_sid, auth_token)
 
         if self.score >= 70:
             message = client.messages.create(
-            body=f"Congratulations!",
-            from_="+16814323893",
-            to="+639911738803",
+                body="Congratulations!",
+                from_="+17753209120",
+                to="+639489625940",
             )
-
         else:
             message = client.messages.create(
-            body=f"Sorry! Try again",
-            from_="+16814323893",
-            to="+639911738803",
+                body="Sorry! Try again",
+                from_="+17753209120",
+                to="+639489625940",
             )
 
         print(f"Message sent: {message.sid}")
-        
-
-        # Call the parent save method
         super().save(*args, **kwargs)
